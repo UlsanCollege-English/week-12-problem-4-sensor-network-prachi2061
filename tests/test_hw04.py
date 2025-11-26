@@ -1,17 +1,8 @@
 import pytest
 from main import prim_mst
 
-
 def normalize_edges(edge_list):
-    """
-    Convert (u, v, w) to (frozenset({u, v}), w) and sort,
-    so that (A, B, w) is the same as (B, A, w).
-    """
     return sorted((frozenset((u, v)), w) for (u, v, w) in edge_list)
-
-
-# Normal tests (4)
-
 
 def test_simple_triangle():
     graph = {
@@ -25,7 +16,6 @@ def test_simple_triangle():
     assert norm == expected
     assert total_cost == 4
 
-
 def test_square_graph():
     graph = {
         "A": [("B", 1), ("D", 4)],
@@ -35,8 +25,7 @@ def test_square_graph():
     }
     mst_edges, total_cost = prim_mst(graph, "A")
     assert len(mst_edges) == 3
-    assert total_cost == 1 + 2 + 1  # 4
-
+    assert total_cost == 4
 
 def test_chain_graph():
     graph = {
@@ -47,8 +36,7 @@ def test_chain_graph():
     }
     mst_edges, total_cost = prim_mst(graph, "G1")
     assert len(mst_edges) == 3
-    assert total_cost == 2 + 3 + 1
-
+    assert total_cost == 6
 
 def test_two_possible_msts_same_cost():
     graph = {
@@ -60,28 +48,19 @@ def test_two_possible_msts_same_cost():
     assert len(mst_edges) == 2
     assert total_cost == 2
 
-
-# Edge-case tests (3)
-
-
 def test_single_node_graph():
     graph = {"Solo": []}
     mst_edges, total_cost = prim_mst(graph, "Solo")
     assert mst_edges == []
     assert total_cost == 0
 
-
 def test_two_node_graph():
-    graph = {
-        "A": [("B", 10)],
-        "B": [("A", 10)],
-    }
+    graph = {"A": [("B", 10)], "B": [("A", 10)]}
     mst_edges, total_cost = prim_mst(graph, "A")
     norm = normalize_edges(mst_edges)
     expected = normalize_edges([("A", "B", 10)])
     assert norm == expected
     assert total_cost == 10
-
 
 def test_graph_with_heavier_extra_edges():
     graph = {
@@ -95,10 +74,6 @@ def test_graph_with_heavier_extra_edges():
     assert norm == expected
     assert total_cost == 2
 
-
-# Complex tests (3)
-
-
 def test_larger_graph_multiple_branches():
     graph = {
         "H1": [("H2", 3), ("H3", 2)],
@@ -109,9 +84,7 @@ def test_larger_graph_multiple_branches():
     }
     mst_edges, total_cost = prim_mst(graph, "H1")
     assert len(mst_edges) == 4
-    # One MST: H1-H3 (2), H3-H5 (1), H1-H2 (3), H2-H4 (4) => 10
     assert total_cost == 10
-
 
 @pytest.mark.parametrize("start", ["H1", "H2", "H3"])
 def test_mst_same_cost_from_any_start(start):
@@ -123,9 +96,8 @@ def test_mst_same_cost_from_any_start(start):
         "H5": [("H2", 6), ("H3", 1), ("H4", 5)],
     }
     mst_edges, total_cost = prim_mst(graph, start)
-    assert len(mst_edges) == len(graph) - 1
+    assert len(mst_edges) == 4
     assert total_cost == 10
-
 
 def test_graph_with_many_edges():
     graph = {
@@ -136,4 +108,4 @@ def test_graph_with_many_edges():
     }
     mst_edges, total_cost = prim_mst(graph, "A")
     assert len(mst_edges) == 3
-    assert total_cost == 1 + 1 + 3  # C-D, A-C, A-B or similar
+    assert total_cost == 5
