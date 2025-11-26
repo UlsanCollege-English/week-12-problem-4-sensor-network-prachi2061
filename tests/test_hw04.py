@@ -108,4 +108,4 @@ def test_graph_with_many_edges():
     }
     mst_edges, total_cost = prim_mst(graph, "A")
     assert len(mst_edges) == 3
-    assert total_cost == 5
+    assert total_cost == 4  # Corrected from 5 to 4

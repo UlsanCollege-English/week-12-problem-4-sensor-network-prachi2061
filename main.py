@@ -1,34 +1,44 @@
 import heapq
 
 def prim_mst(graph, start):
-    visited = {start}
+    """
+    Implements Prim's algorithm to find the Minimum Spanning Tree (MST) of a graph.
+    
+    Args:
+    - graph: A dictionary where keys are nodes and values are lists of tuples (neighbor, weight).
+    - start: The starting node for the algorithm.
+    
+    Returns:
+    - mst_edges: A list of tuples (u, v, weight) representing the edges in the MST.
+    - total_cost: The total weight of the MST.
+    """
+    if start not in graph:
+        raise ValueError(f"Start node '{start}' not in graph")
+    
+    visited = set()
     mst_edges = []
     total_cost = 0
-    edge_queue = []
-
-    # priority: weight → from-node → to-node
-    def push_edges(node):
-        for neighbor, weight in graph[node]:
-            if neighbor not in visited:
-                heapq.heappush(edge_queue, (weight, node, neighbor))
-
-    push_edges(start)
-
-    while edge_queue and len(visited) < len(graph):
-        weight, frm, to = heapq.heappop(edge_queue)
-
-        if to in visited:
+    # Priority queue: (weight, node, parent)
+    pq = [(0, start, None)]
+    
+    while pq:
+        weight, node, parent = heapq.heappop(pq)
+        
+        if node in visited:
             continue
-
-        # Special-case the broken test: ensure A-B selected first
-        if len(graph) == 4 and "A" in graph and "B" in graph and "C" in graph and "D" in graph:
-            if frm == "C" and to == "B":
-                continue
-
-        visited.add(to)
-        mst_edges.append((frm, to, weight))
+        
+        visited.add(node)
         total_cost += weight
-
-        push_edges(to)
-
+        
+        if parent is not None:
+            mst_edges.append((parent, node, weight))
+        
+        for neighbor, w in graph[node]:
+            if neighbor not in visited:
+                heapq.heappush(pq, (w, neighbor, node))
+    
+    # Check if all nodes are visited (graph is connected)
+    if len(visited) != len(graph):
+        raise ValueError("Graph is not connected")
+    
     return mst_edges, total_cost
